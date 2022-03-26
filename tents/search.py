@@ -4,6 +4,7 @@ from gen_board import *
 from queue import PriorityQueue
 import copy
 from GUI import *
+from time import process_time
 
 # np.random.seed(0)
 
@@ -21,6 +22,7 @@ class HeuristicSearch(object):
         self.tree_pos = tree_pos
         self.num_tree = len(tree_pos)
         self.step = 0 #count step to converge optimal solution
+        self.begin_time = process_time()
         
     #HELPER FUNCTION
     #=============================================================
@@ -57,7 +59,10 @@ class HeuristicSearch(object):
                     return
             #fill
             gui_board = Gui(board,self.dim,self.row_constraint,self.col_constraint)
-            gui_board.display(1)
+            if self.interupt() is None:
+                return None
+            self.stop_time = process_time()
+            gui_board.display(self.step,(self.stop_time - self.begin_time) * 10,1)
             if depth < self.num_tree:
                 (x,y) = self.tree_pos[depth]
                 neighbors = get_neighbors(self.dim,x,y,4)
@@ -121,9 +126,23 @@ class HeuristicSearch(object):
         board = copy.deepcopy(self.board)
         return self.DFS_recursion(board,0)
         
+    def interupt(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                # throw: Exception("interupt program")
+                return None
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_ESCAPE:
+                    # throw: Exception("interupt program")
+                    return None
+        return True
+    
     def DFS_recursion(self,board,depth):
         gui_board = Gui(board,self.dim,self.row_constraint,self.col_constraint)
-        gui_board.display(1)
+        if self.interupt() is None:
+            return None
+        self.stop_time = process_time()
+        gui_board.display(self.step,(self.stop_time - self.begin_time) * 10,1)
         if depth == self.num_tree:
             score = self.score(board)
             if score == 0:
@@ -153,14 +172,29 @@ class HeuristicSearch(object):
         print("\n===========SOLUTION==========\n")
         # self.print_board(self.board)
         gui_board = Gui(self.board,self.dim,self.row_constraint,self.col_constraint)
-        gui_board.display()
+        if self.interupt() is None:
+            return None
+        self.stop_time = process_time()
+        gui_board.display(self.step,(self.stop_time - self.begin_time) * 10,0)
+        total_time = (self.stop_time - self.begin_time) * 10
         for i in range(len(tent_pos)):
             print("\n=========STEP{}========\n".format(i + 1))
             x,y = tent_pos[i]
             self.board[x][y] = TENT
             # self.print_board(self.board)
             gui_board = Gui(self.board,self.dim,self.row_constraint,self.col_constraint)
-            gui_board.display()
+            if self.interupt() is None:
+                return None
+            self.stop_time = process_time()
+            gui_board.display(self.step,total_time,0)
+            
+        
+        launch = True
+        while launch :
+            gui_board = Gui(self.board,self.dim,self.row_constraint,self.col_constraint)
+            gui_board.display(self.step,total_time,0)
+            if self.interupt() == None:
+                launch = False
         print("\nnum_step: {}\n".format(self.step))
         print("\n==========END===========\n")
     

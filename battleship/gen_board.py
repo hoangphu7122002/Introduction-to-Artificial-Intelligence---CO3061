@@ -215,7 +215,7 @@ class gen_board(object):
     #========================================================
 
 if __name__ == '__main__':
-    dim = 15
+    dim = 6
     gen_object = gen_board(dim)
     board = gen_object.get_board()
     row_constraint = gen_object.get_row_constraint()
