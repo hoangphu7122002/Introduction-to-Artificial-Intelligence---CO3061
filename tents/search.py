@@ -13,7 +13,7 @@ EMPTY = 0
 TREE = 1
 TENT = 2
 
-class HeuristicSearch(object):
+class Search(object):
     def __init__(self,board,row_constraint,col_constraint,tree_pos):
         self.dim = len(board)
         self.board = board
@@ -236,7 +236,7 @@ if __name__ == "__main__":
     col_constraint = gb.get_col_constraint()
     tree_pos = gb.get_tree_pos()
     
-    agent = HeuristicSearch(board,row_constraint,col_constraint,tree_pos)
+    agent = Search(board,row_constraint,col_constraint,tree_pos)
     agent.A_star()
     
 
