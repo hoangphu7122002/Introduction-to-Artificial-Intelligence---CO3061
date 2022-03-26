@@ -52,6 +52,7 @@ class HeuristicSearch(object):
         while not self.open_list.empty():
             score,depth,board = self.open_list.get()
             board = self.unzip_board(board)
+            print(depth)
             if depth == self.num_tree:
                 if score == depth:
                     #backtrack to sol
@@ -62,7 +63,7 @@ class HeuristicSearch(object):
             if self.interupt() is None:
                 return None
             self.stop_time = process_time()
-            gui_board.display(self.step,(self.stop_time - self.begin_time) * 10,1)
+            gui_board.display(self.step,(self.stop_time - self.begin_time) ,1)
             if depth < self.num_tree:
                 (x,y) = self.tree_pos[depth]
                 neighbors = get_neighbors(self.dim,x,y,4)
@@ -142,7 +143,8 @@ class HeuristicSearch(object):
         if self.interupt() is None:
             return None
         self.stop_time = process_time()
-        gui_board.display(self.step,(self.stop_time - self.begin_time) * 10,1)
+        gui_board.display(self.step,(self.stop_time - self.begin_time) ,1)
+        # print(depth)
         if depth == self.num_tree:
             score = self.score(board)
             if score == 0:
@@ -175,8 +177,8 @@ class HeuristicSearch(object):
         if self.interupt() is None:
             return None
         self.stop_time = process_time()
-        gui_board.display(self.step,(self.stop_time - self.begin_time) * 10,0)
-        total_time = (self.stop_time - self.begin_time) * 10
+        gui_board.display(self.step,(self.stop_time - self.begin_time) ,0)
+        total_time = (self.stop_time - self.begin_time)
         for i in range(len(tent_pos)):
             print("\n=========STEP{}========\n".format(i + 1))
             x,y = tent_pos[i]
@@ -228,7 +230,7 @@ class HeuristicSearch(object):
     #==================================================
     
 if __name__ == "__main__":
-    gb = Board(6)
+    gb = Board(8)
     board = gb.get_board()
     row_constraint = gb.get_row_constraint()
     col_constraint = gb.get_col_constraint()
