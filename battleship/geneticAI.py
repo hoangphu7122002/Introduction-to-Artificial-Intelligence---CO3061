@@ -10,14 +10,12 @@ class Genetic:
         self.col_constraint = col_constraint
         self.ship = ship
         self.total_step = 0
-        self.solutions = []
+        self.solution = None
+        self.generation = 0
         self.gen = []     
         
     def __search__(self, board):
-        cur_diff = 0
-        for row in range(self.dim):
-            if (np.count_nonzero(self.board[row, :]) == self.row_constraint[row]):
-                cur_diff += 1
+        pass
     def get_border(self, ship):
         border = []
         for sh in range(0, len(ship)):
@@ -26,75 +24,6 @@ class Genetic:
                 if (not list(neigh[ne]) in ship and not neigh[ne] in border):
                     border.append(neigh[ne])
         return border   
-        
-    def get_ship_present(self,board):
-        temp = np.zeros((self.dim, self.dim))
-        type_ship = []
-        for r in range(self.dim):
-            for c in range(self.dim):
-                if (board[r][c] == 0):
-                    temp[r][c] = True
-                elif board[r][c] == 1 and temp[r][c] == False:
-                    run = [r, c]
-                    leng = 0
-                    ship = []
-                    #only 2 direction
-                     #go right
-                    while (run[1] in range(0, self.dim) and board[run[0]][run[1]] == 1):
-                        temp[run[0]][run[1]] = True
-                        ship.append(copy.deepcopy(run))
-                        leng += 1
-                        run[1] += 1
-                    if leng > 1: # clearly known direction is go right
-                        border = self.get_border(ship)
-                        # print("ship") 
-                        # print(ship)
-                        # print("border")
-                        # print(border)
-                        for i in range(len(border)):
-                            if (board[border[i][0]][border[i][1]] == 1):
-                                return False
-                        type_ship.append(copy.deepcopy(leng))
-                        continue
-                     #go down
-                    # reset
-                    run = [r, c]
-                    leng = 0
-                    ship = []
-                    while (run[0] in range(0, self.dim) and board[run[0]][run[1]] == 1):
-                        temp[run[0]][run[1]] = True
-                        ship.append(copy.deepcopy(run))
-                        leng += 1
-                        run[0] += 1
-                    border = self.get_border(ship)
-                    for i in range(len(border)):
-                        if (board[border[i][0]][border[i][1]] == 1):
-                            return False
-                    type_ship.append(copy.deepcopy(leng))
-
-        # enough type of ship
-        type_ship.sort()
-        type_ship.reverse()
-        # print("type ship")
-        # print(type_ship)
-        point = 0
-        
-        for i in range(min(len(type_ship),len(self.ship))):
-            if (type_ship[i] != self.ship[i]):
-                point += abs(type_ship[i] - self.ship[i])
-        
-        if len(type_ship) > len(self.ship):
-            max_t = type_ship
-            min_t = self.ship
-        else:
-            min_t = type_ship
-            max_t = self.ship
-        
-        for i in range(len(min_t),len(max_t)):
-            point += max_t[i]
-        
-        return point
-
     def check(self, state):
         # not over constraint
         for i in range(self.dim):
@@ -102,7 +31,7 @@ class Genetic:
                 return False
             if (np.count_nonzero(state[i,:]) != self.row_constraint[i]):
                 return False
-        # not appear too close
+        
         # not appear too close
         temp = np.zeros((self.dim, self.dim))
         type_ship = []
@@ -157,8 +86,6 @@ class Genetic:
             if (type_ship[i] != self.ship[i]):
                 return False
         return True
-        
-        
     def generate_board(self):
         # generate random board enough part of ship in all of rows
         # loop through rows
@@ -173,17 +100,13 @@ class Genetic:
                     col = np.random.randint(0, self.dim)
                 board2[row][col] = 1
         return board2
-        
     def fitness(self, state):
         cnt = 0
         for c in range(self.dim):
             cnt += np.count_nonzero(state[:, c]) == self.col_constraint[c] 
-        cnt += self.get_ship_present(state)
         return cnt
-        
     def fitness_comp(self, state):
-        return self.fitness(state)
-        
+        return self.fitness(state) 
     def solve(self):
         num_of_populations = 50
         done = False
@@ -191,11 +114,11 @@ class Genetic:
             self.gen.append(self.generate_board())
         self.gen.sort(key = self.fitness_comp, reverse = True)
         ans = None
-        generation = 0
+        self.generation = 0
         # getting started generation
         while not done:
-            print("Generation " + str(generation))
-            generation += 1
+            print("Generation " + str(self.generation))
+            self.generation += 1
             # selections, random 2 index, choice better
             # for i in range(0, num_of_populations):
             #     inx1 = np.random.randint(0, num_of_populations)
@@ -239,7 +162,7 @@ class Genetic:
                 print(str(self.fitness(self.gen[i])), end=' ')      
                 if (self.check(self.gen[i])):
                     #print_board(self.gen[i + 1],self.dim,self.col_constraint,self.row_constraint)
-                    ans = copy.deepcopy(self.gen[i])
+                    self.solution = copy.deepcopy(self.gen[i])
                     done = True
                     break  
             print('\n') 
@@ -250,20 +173,12 @@ class Genetic:
             #         print_board(self.gen[i],self.dim,self.col_constraint,self.row_constraint)
             #     n = input()
 
-        print_board(ans,self.dim,self.col_constraint,self.row_constraint)
     def mutate(self, state):
         #cur_fitness = self.fitness(state)   
         num_mutate_row = np.random.randint(0, self.dim, np.random.randint(0, self.dim) + 1)
         #print(state)
         for i in range(len(num_mutate_row)):
             np.random.shuffle(state[num_mutate_row[i]])
-        #print(state)
-            # # finding 1
-            # for c in range(0, self.dim):
-            #     if (state[id_row][c] == 1 and np.count_nonzero(state[:, c]) > self.col_constraint[c]):
-            #         for col_push in range(self.dim):
-            #             if (state[id_row][col_push] == 0 and np.count_nonzero(state[:,col_push]) < self.col_constraint[col_push] and np.random.randint(0, 100) < 90): # not enough or max #or self.fitness(state) == 6
-            #                 state[id_row][col_push], state[id_row][c] = state[id_row][c], state[id_row][col_push]
             
     def crossover(self,parent1, parent2):
         child1 = copy.deepcopy(parent1)
@@ -278,10 +193,9 @@ class Genetic:
                 max_fitness = max(self.fitness(child1), self.fitness(child2))
         return child1, child2
     def show(self):
-        print("Number of solution(s): " + str(len(self.solutions)))
-        for num in range(len(self.solutions)):
-            print("Solution " + str(num))
-            print(self.solutions[num])
+        print("Total generations: " + str(self.generation))
+        print("Solution:")
+        print_board(self.solution,self.dim,self.col_constraint,self.row_constraint)
     def get_total_step_search(self):
         return self.total_step
 if __name__ == '__main__':
@@ -300,22 +214,6 @@ if __name__ == '__main__':
     print_board(solutionBoard,dim,col_constraint,row_constraint)
     print("\n======================================\n")
 
-    n = int(input())
-
-    # dfs = DFS(gen_object.get_board(), gen_object.get_ship(), gen_object.get_row_constraint(), gen_object.get_col_constraint())
-    # dfs.solve()
-    # dfs.show()
-    # print("Total step search " +str(dfs.get_total_step_search()))
-
     gen = Genetic(gen_object.get_board(), gen_object.get_ship(), gen_object.get_row_constraint(), gen_object.get_col_constraint())
     gen.solve()
     gen.show()
-    print("Total step search " +str(gen.get_total_step_search()))
-    
-            
-                                
-                
-                
-                
-                
-            
