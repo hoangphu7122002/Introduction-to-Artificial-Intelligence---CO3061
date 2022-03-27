@@ -30,7 +30,7 @@ class DFS:
             return
         prt = Gui(self.board,self.dim,self.row_constraint,self.col_constraint)
         self.stop_time = process_time()
-        prt.display(self.total_step, self.stop_time - self.begin_time, 0.005)
+        prt.display(self.total_step, self.stop_time - self.begin_time,-1, 0.005)
         if (prt.interupt()):
             self.interupt = True
         self.total_step += 1
@@ -76,7 +76,7 @@ class DFS:
         if (self.solution != []):           
             print("===== SOLUTION =====")
             init = Gui(self.prtSolutionBoard,self.dim,self.row_constraint,self.col_constraint)
-            init.display(self.total_step, self.stop_time)
+            init.display(self.total_step, self.stop_time,-1)
             vis = np.zeros((self.dim, self.dim))
             for i in range(0, self.dim):
                 for j in range(0, self.dim):
@@ -96,7 +96,7 @@ class DFS:
                         gui_board = Gui(self.prtSolutionBoard,self.dim,self.row_constraint,self.col_constraint)
                         gui_board.display(self.total_step, self.stop_time)
             gui_board = Gui(self.prtSolutionBoard,self.dim,self.row_constraint,self.col_constraint)
-            gui_board.display(self.total_step, self.stop_time, 0)
+            gui_board.display(self.total_step, self.stop_time,-1)
     def get_border(self, ship):
         border = []
         for sh in range(0, len(ship)):

@@ -72,7 +72,7 @@ class Gui(object):
             text = font.render(str(col_constraint), True, black)
             self.window.blit(text, [x, offset - text.get_height()])
         
-    def render_font(self,step = 0,time = 0):
+    def render_font(self,step = 0,time = 0,score = -1):
         intro_surface = self.game_font.render(f'TENTS PUZZLE',True,red)
         intro_rect = intro_surface.get_rect(center = (925,300))
         self.window.blit(intro_surface,intro_rect)
@@ -88,10 +88,15 @@ class Gui(object):
         time_surface = self.game_font.render(f'TIME: {time}',True,black)
         time_rect = time_surface.get_rect(center = (925,590))
         self.window.blit(time_surface,time_rect)
+        
+        if score != -1:
+            score_depth_surface = self.game_font.render(f'SCORE: {score}',True,black)
+            score_depth_rect = score_depth_surface.get_rect(center = (925,660))
+            self.window.blit(score_depth_surface,score_depth_rect)
     
-    def display(self,step = 0,time_ = 0,check = 0):
+    def display(self,step = 0,time_ = 0,score = -1,check = 0):
         pygame.init()
-        self.render_font(step,time_)
+        self.render_font(step,time_,score)
         self.draw_board()
         pygame.display.flip()  # Refresh display
         if check == 0:

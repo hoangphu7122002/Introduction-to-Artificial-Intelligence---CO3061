@@ -62,7 +62,7 @@ class Search(object):
             if self.interupt() is None:
                 return None
             self.stop_time = process_time()
-            gui_board.display(self.step,(self.stop_time - self.begin_time) ,1)
+            gui_board.display(self.step,(self.stop_time - self.begin_time),score + depth,1)
             if depth < self.num_tree:
                 (x,y) = self.tree_pos[depth]
                 neighbors = get_neighbors(self.dim,x,y,4)
@@ -142,7 +142,7 @@ class Search(object):
         if self.interupt() is None:
             return None
         self.stop_time = process_time()
-        gui_board.display(self.step,(self.stop_time - self.begin_time) ,1)
+        gui_board.display(self.step,(self.stop_time - self.begin_time) ,depth,1)
         # print(depth)
         if depth == self.num_tree:
             score = self.score(board)
@@ -176,7 +176,7 @@ class Search(object):
         if self.interupt() is None:
             return None
         self.stop_time = process_time()
-        gui_board.display(self.step,(self.stop_time - self.begin_time) ,0)
+        gui_board.display(self.step,(self.stop_time - self.begin_time),-1 ,0)
         total_time = (self.stop_time - self.begin_time)
         for i in range(len(tent_pos)):
             print("\n=========STEP{}========\n".format(i + 1))
@@ -187,13 +187,13 @@ class Search(object):
             if self.interupt() is None:
                 return None
             self.stop_time = process_time()
-            gui_board.display(self.step,total_time,0)
+            gui_board.display(self.step,total_time,-1,0)
             
         
         launch = True
         while launch :
             gui_board = Gui(self.board,self.dim,self.row_constraint,self.col_constraint)
-            gui_board.display(self.step,total_time,0)
+            gui_board.display(self.step,total_time,-1,0)
             if self.interupt() == None:
                 launch = False
         print("\nnum_step: {}\n".format(self.step))
