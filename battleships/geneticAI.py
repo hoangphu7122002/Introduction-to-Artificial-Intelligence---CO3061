@@ -1,6 +1,7 @@
 from gen_board import *
 import time
 import numpy as np
+from time import process_time
 
 class Genetic:
     def __init__(self, board, ship, row_constraint, col_constraint, dim = 6):
@@ -13,7 +14,9 @@ class Genetic:
         self.solution = None
         self.generation = 0
         self.gen = []     
-        
+        self.interupt = None
+        self.begin_time = process_time()
+        self.stop_time = 0
     def __search__(self, board):
         pass
     def get_border(self, ship):
@@ -117,6 +120,8 @@ class Genetic:
         self.generation = 0
         # getting started generation
         while not done:
+            # if (self.solution is not None):# or self.interupt != None
+            #     return
             print("Generation " + str(self.generation))
             self.generation += 1
             # selections, random 2 index, choice better
@@ -163,6 +168,7 @@ class Genetic:
                 if (self.check(self.gen[i])):
                     #print_board(self.gen[i + 1],self.dim,self.col_constraint,self.row_constraint)
                     self.solution = copy.deepcopy(self.gen[i])
+                    self.stop_time = process_time() - self.begin_time
                     done = True
                     break  
             print('\n') 
@@ -194,10 +200,14 @@ class Genetic:
         return child1, child2
     def show(self):
         print("Total generations: " + str(self.generation))
+        print("Total time search: {:.2f}".format(self.stop_time))
         print("Solution:")
         print_board(self.solution,self.dim,self.col_constraint,self.row_constraint)
     def get_total_step_search(self):
         return self.total_step
+
+############# debug #############
+
 if __name__ == '__main__':
     dim = 6
     gen_object = gen_board(dim)

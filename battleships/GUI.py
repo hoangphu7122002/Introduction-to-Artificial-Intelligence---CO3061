@@ -71,8 +71,8 @@ class Gui(object):
             self.window.blit(text, [x, offset - text.get_height()])
         
         
-    def render_font(self):
-        intro_surface = self.game_font.render(f'BATTLE SHIP',True,red)
+    def render_font(self,step = 0,time = 0):
+        intro_surface = self.game_font.render(f'BATTLE SHIPS',True,red)
         intro_rect = intro_surface.get_rect(center = (925,300))
         self.window.blit(intro_surface,intro_rect)
         
@@ -80,36 +80,46 @@ class Gui(object):
         score_rect = score_surface.get_rect(center = (925,450))
         self.window.blit(score_surface,score_rect)
         
-        high_score_surface = self.game_font.render(f'STEP: {int(0)}',True,black)
+        high_score_surface = self.game_font.render(f'STEP: {step:5d}',True,black)
         high_score_rect = high_score_surface.get_rect(center = (925,520))
         self.window.blit(high_score_surface,high_score_rect)
         
-        time_surface = self.game_font.render(f'TIME: {int(0)}',True,black)
+        time_surface = self.game_font.render('TIME: {:.2f}'.format(time),True,black)
         time_rect = time_surface.get_rect(center = (925,590))
         self.window.blit(time_surface,time_rect)
-    
-    def display(self,check = 0):
+    def interupt(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                # throw: Exception("interupt program")
+                return None
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_ESCAPE:
+                    # throw: Exception("interupt program")
+                    return None
+        return True
+    def display(self, step = 0,time_ = 0, second = 2):
         pygame.init()
-
+        self.render_font(step,time_)
         self.draw_board()
         pygame.display.flip()  # Refresh display
-        # if check == 0:
-        #     time.sleep(1.5)
-        # else:
-        #     time.sleep(0.005)
-        launched = True
-        while launched:
-            self.draw_board()
-            self.render_font()
-            pygame.display.flip()  # Refresh display
+        if second != 0:
+            time.sleep(second)
+        else:
+            while self.interupt():
+                time.sleep(1)
+        # launched = True
+        # while launched:
+        #     self.draw_board()
+        #     self.render_font()
+        #     pygame.display.flip()  # Refresh display
             
             
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    launched = False
-                if event.type == pygame.KEYUP:
-                    if event.key == pygame.K_ESCAPE:
-                            launched = False
+        #     for event in pygame.event.get():
+        #         if event.type == pygame.QUIT:
+        #             launched = False
+        #         if event.type == pygame.KEYUP:
+        #             if event.key == pygame.K_ESCAPE:
+        #                     launched = False
 
 if __name__ == "__main__":
     dim = 6
