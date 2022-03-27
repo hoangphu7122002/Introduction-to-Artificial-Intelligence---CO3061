@@ -5,7 +5,7 @@ from geneticAI import *
 from GUI import *
 
 if __name__ == '__main__':
-    dim = 10
+    dim = 6
     gen_object = gen_board(dim)
     board = gen_object.get_board()
     row_constraint = gen_object.get_row_constraint()
@@ -27,6 +27,8 @@ if __name__ == '__main__':
     # print("Total step search " +str(dfs.get_total_step_search()))
 
     # Genetic algorithm
-    gen = Genetic(gen_object.get_board(), gen_object.get_ship(), gen_object.get_row_constraint(), gen_object.get_col_constraint(), dim)
+    # gen = Genetic(gen_object.get_board(), gen_object.get_ship(), gen_object.get_row_constraint(), gen_object.get_col_constraint(), dim)
+
+    gen = DFS(gen_object.get_board(), gen_object.get_ship(), gen_object.get_row_constraint(), gen_object.get_col_constraint(), dim)
     gen.solve()
     gen.show()

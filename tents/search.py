@@ -52,7 +52,6 @@ class Search(object):
         while not self.open_list.empty():
             score,depth,board = self.open_list.get()
             board = self.unzip_board(board)
-            print(depth)
             if depth == self.num_tree:
                 if score == depth:
                     #backtrack to sol
@@ -228,17 +227,7 @@ class Search(object):
         head_col += line
         print(head_col)
     #==================================================
-    
-if __name__ == "__main__":
-    gb = Board(8)
-    board = gb.get_board()
-    row_constraint = gb.get_row_constraint()
-    col_constraint = gb.get_col_constraint()
-    tree_pos = gb.get_tree_pos()
-    
-    agent = Search(board,row_constraint,col_constraint,tree_pos)
-    agent.A_star()
-    
+
 
     
     
