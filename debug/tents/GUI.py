@@ -1,7 +1,7 @@
 import os
 import pygame
 from pygame.transform import scale
-from tents.gen_board import *
+from gen_board import *
 import time
 
 #define global variables
@@ -23,9 +23,9 @@ class Gui(object):
         pygame.init()
         self.window = pygame.display.set_mode((1100,800))
         self.window.fill(white)
-        self.game_font = pygame.font.Font('tents\\FileGame\\04B_19.TTF',40)
-        self.tent_image = pygame.image.load(os.path.join('tents\\images','tent-icon.jpg')).convert()
-        self.tree_image = pygame.image.load(os.path.join('tents\\images','tree-icon.png')).convert()
+        self.game_font = pygame.font.Font('FileGame\\04B_19.TTF',40)
+        self.tent_image = pygame.image.load(os.path.join('images','tent-icon.jpg')).convert()
+        self.tree_image = pygame.image.load(os.path.join('images','tree-icon.png')).convert()
         
     def draw_board(self):
         dim = self.dim

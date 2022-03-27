@@ -1,9 +1,9 @@
 from re import L
 import numpy as np
-from tents.gen_board import *
+from gen_board import *
 from queue import PriorityQueue
 import copy
-from tents.GUI import *
+from GUI import *
 from time import process_time
 
 # np.random.seed(0)

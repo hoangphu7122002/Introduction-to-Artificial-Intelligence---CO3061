@@ -1,7 +1,7 @@
 import os
 import pygame
 from pygame.transform import scale
-from gen_board import *
+from battleships.gen_board import *
 import time
 
 #define global variables
@@ -21,7 +21,7 @@ class Gui(object):
         self.col_constraint = col_constraint
         pygame.init()
         self.window = pygame.display.set_mode((1100,800))
-        self.game_font = pygame.font.Font('FileGame\\04B_19.TTF',40)
+        self.game_font = pygame.font.Font('battleships\\FileGame\\04B_19.TTF',40)
         self.window.fill(white)
         
     def draw_board(self):
