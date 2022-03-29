@@ -4,6 +4,7 @@ import tents.search as tents_search
 
 import battleships.gen_board as battleships_gen_board
 import battleships.blind_search as battleships_blind_search
+import battleships.geneticAI as battleships_geneticAI_search
 
 red = (255,69,0)
 green = (0, 255, 130)
@@ -204,7 +205,7 @@ class GUI_MENU(object):
                         else:
                             agent.A_star()
                     else:
-                        gen_object = battleships_gen_board.gen_board(dict_level[1])
+                        gen_object = battleships_gen_board.gen_board(dict_level[i])
                         board = gen_object.get_board()
                         row_constraint = gen_object.get_row_constraint()
                         col_constraint = gen_object.get_col_constraint()
@@ -214,7 +215,9 @@ class GUI_MENU(object):
                             gen.solve()
                             gen.show()
                         else:
-                            pass
+                            gen = battleships_geneticAI_search.Genetic(gen_object.get_board(), gen_object.get_ship(), gen_object.get_row_constraint(), gen_object.get_col_constraint(), len(gen_object.get_board()))
+                            gen.solve()
+                            gen.show()
                     
             
             pygame.display.update()
