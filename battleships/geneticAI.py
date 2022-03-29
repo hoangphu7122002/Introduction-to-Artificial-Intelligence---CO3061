@@ -1,11 +1,10 @@
-from battleships.gen_board import *
+from gen_board import *
 import time
 import numpy as np
 from time import process_time
-from battleships.GUI import *
+from GUI import *
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
-
 
 class Genetic:
     def __init__(self, board, ship, row_constraint, col_constraint, dim = 6):
@@ -117,6 +116,9 @@ class Genetic:
         return cnt
     def solve(self):
         num_of_populations = self.population
+        percentage = []
+        for i in range(self.population):
+            percentage.extend([i] * (self.population - i))
         for i in range(num_of_populations):
             self.gen.append(self.generate_board())
         self.gen.sort(key = self.fitness, reverse = True)
@@ -141,42 +143,37 @@ class Genetic:
             #     return
             self.generation += 1
             ax.set_title("Generation " + str(self.generation))
-            # selections, random 2 index, choice better
-            # for i in range(0, num_of_populations):
-            #     inx1 = np.random.randint(0, num_of_populations)
-            #     inx2 = np.random.randint(0, num_of_populations)
-            #     while inx2 == inx1:
-            #         inx2 = np.random.randint(0, num_of_populations)
-            #     if (self.fitness(self.gen[inx1]) > self.fitness(self.gen[inx2])):
-            #         self.gen[num_of_populations - 1 - i] = self.gen[inx1]
-            #     else:
-            #         self.gen[num_of_populations - 1 - i] = self.gen[inx2]
             #=========#
-            # shuffle
+            # selection
             for i in range(0, num_of_populations):
-                inx1 = np.random.randint(0, num_of_populations)
-                inx2 = np.random.randint(0, num_of_populations)
+                inx1 = np.random.randint(0, len(percentage))
+                inx2 = np.random.randint(0, len(percentage))
                 while inx2 == inx1:
-                    inx2 = np.random.randint(0, num_of_populations)
+                    inx2 = np.random.randint(0, len(percentage))
+                inx1 = percentage[inx1]
+                inx2 = percentage[inx2]
                 if self.fitness(self.gen[inx1]) < int(self.dim / 3):
                     self.gen[inx1] = self.generate_board()
                 if self.fitness(self.gen[inx2]) < int(self.dim / 3):
                     self.gen[inx2] = self.generate_board()
-                self.gen[inx1], self.gen[inx2] = self.gen[inx2], self.gen[inx1]  
+                self.gen[inx1], self.gen[inx2] = self.gen[inx2], self.gen[inx1]
             #=========#
             # crossover
             for i in range(0, int(num_of_populations / 5) * 4):
                 # random index
-                inx1 = np.random.randint(0, num_of_populations)
-                inx2 = np.random.randint(0, num_of_populations)
+                inx1 = np.random.randint(0, len(percentage))
+                inx2 = np.random.randint(0, len(percentage))
                 while inx2 == inx1:
-                    inx2 = np.random.randint(0, num_of_populations)
+                    inx2 = np.random.randint(0, len(percentage))
+                inx1 = percentage[inx1]
+                inx2 = percentage[inx2]
                 # crossover
                 self.gen[inx1], self.gen[inx2] = self.crossover(self.gen[inx1], self.gen[inx2])
             #=========#
             # mutate
             for i in range(0, int(num_of_populations/ 10)):
-                inx = np.random.randint(0, num_of_populations)
+                inx = np.random.randint(0, len(percentage))
+                inx = percentage[inx]
                 self.mutate(self.gen[inx])   
             #=========#
             #print and check
@@ -262,6 +259,7 @@ class Genetic:
     def get_total_step_search(self):
         return self.total_step
 
+############# debug #############
 
 if __name__ == '__main__':
     dim = 6
@@ -281,4 +279,3 @@ if __name__ == '__main__':
 
     gen = Genetic(gen_object.get_board(), gen_object.get_ship(), gen_object.get_row_constraint(), gen_object.get_col_constraint())
     gen.solve()
-    gen.show()
