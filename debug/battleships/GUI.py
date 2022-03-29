@@ -116,7 +116,7 @@ class Gui(object):
         score_rect = score_surface.get_rect(center = (925,450))
         self.window.blit(score_surface,score_rect)
         
-        high_score_surface = self.game_font.render(f'GENERATION: {step:4d}',True,black)
+        high_score_surface = self.game_font.render(f'GENERATION: {step}',True,black)
         high_score_rect = high_score_surface.get_rect(center = (925,520))
         self.window.blit(high_score_surface,high_score_rect)
         
