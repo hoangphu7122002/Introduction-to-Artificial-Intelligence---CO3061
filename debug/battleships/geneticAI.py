@@ -22,6 +22,7 @@ class Genetic:
         self.begin_time = process_time()
         self.stop_time = 0
         self.population = 50
+        self.percen_plt = None
     def __search__(self, board):
         pass
     def get_border(self, ship):
@@ -125,10 +126,13 @@ class Genetic:
         def generate(num):
             try:
                 if (self.solution != None):
-                    ax.set_title("Generation " + str(self.generation) + "\nSolution found!\nClose the window to view solution")
-                    ax.pie(percen_plt, labels = mylabels, startangle = 90)
                     return
             except:
+                ax.clear()
+                ax.axis('equal')
+                mylabels = [str(i) for i in range(self.dim + 1)]
+                ax.set_title("Generation " + str(self.generation) + "\nSolution found! Close the window to view solution")
+                ax.pie(self.percen_plt, labels = mylabels, startangle = 90)
                 return
             ax.clear()
             ax.axis('equal')
@@ -186,21 +190,22 @@ class Genetic:
                     self.stop_time = process_time() - self.begin_time
                     # done = True
             # print('\n') 
-            percen_plt = np.array(percen)
+            self.percen_plt = np.array(percen)
             mylabels = [str(i) for i in range(self.dim + 1)]
-            ax.pie(percen_plt, labels = mylabels, startangle = 90)
+            ax.pie(self.percen_plt, labels = mylabels, startangle = 90)
             #=========#
             # debug pause       
             # if (generation % 50 == 0):
             #     for i in range(0, num_of_populations):
             #         print_board(self.gen[i],self.dim,self.col_constraint,self.row_constraint)
             #     n = input() 
-        ani = FuncAnimation(fig, generate, frames=range(500), repeat=False)
+        ani = FuncAnimation(fig, generate, frames=range(10000), repeat=False)
         plt.show()
         try:
             if (self.solution == None):
                 print("No solution found yet!")
         except:
+            self.show()
             plt.close('all')
             print("===== SOLUTION =====")
             init = Gui(self.prtSolutionBoard,self.dim,self.row_constraint,self.col_constraint)
@@ -245,10 +250,14 @@ class Genetic:
                 max_fitness = max(self.fitness(child1), self.fitness(child2))
         return child1, child2
     def show(self):
-        print("Total generations: " + str(self.generation))
-        print("Total time search: {:.2f}".format(self.stop_time))
-        print("Solution:")
-        print_board(self.solution,self.dim,self.col_constraint,self.row_constraint)
+        try:
+            if (self.solution == None):
+                print("No solution found yet!")
+        except:
+            print("Total generations: " + str(self.generation))
+            print("Total time search: {:.2f}".format(self.stop_time))
+            print("Solution:")
+            print_board(self.solution,self.dim,self.col_constraint,self.row_constraint)
     def get_total_step_search(self):
         return self.total_step
 
@@ -272,4 +281,3 @@ if __name__ == '__main__':
 
     gen = Genetic(gen_object.get_board(), gen_object.get_ship(), gen_object.get_row_constraint(), gen_object.get_col_constraint())
     gen.solve()
-    gen.show()
