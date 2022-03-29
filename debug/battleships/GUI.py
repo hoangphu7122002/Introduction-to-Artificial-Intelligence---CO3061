@@ -71,7 +71,7 @@ class Gui(object):
             self.window.blit(text, [x, offset - text.get_height()])
         
         
-    def render_font(self,step = 0,time = 0,score = -1):
+    def render_font(self,step = 0,time = 0):
         intro_surface = self.game_font.render(f'BATTLE SHIPS',True,red)
         intro_rect = intro_surface.get_rect(center = (925,300))
         self.window.blit(intro_surface,intro_rect)
@@ -84,15 +84,9 @@ class Gui(object):
         high_score_rect = high_score_surface.get_rect(center = (925,520))
         self.window.blit(high_score_surface,high_score_rect)
         
-        time_surface = self.game_font.render('TIME: {:.2f}'.format(time),True,black)
+        time_surface = self.game_font.render('TIME: {:.2f}s'.format(time),True,black)
         time_rect = time_surface.get_rect(center = (925,590))
         self.window.blit(time_surface,time_rect)
-        
-        if score != -1:
-            depth_surface = self.game_font.render('score: {:.2f}'.format(score),True,black)
-            depth_rect = depth_surface.get_rect(center = (925,660))
-            self.window.blit(depth_surface,depth_rect)
-        
     def interupt(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -103,9 +97,9 @@ class Gui(object):
                     # throw: Exception("interupt program")
                     return None
         return True
-    def display(self, step = 0,time_ = 0,score = -1,second = 2):
+    def display(self, step = 0,time_ = 0, second = 2):
         pygame.init()
-        self.render_font(step,time_,score)
+        self.render_font(step,time_)
         self.draw_board()
         pygame.display.flip()  # Refresh display
         if second != 0:
@@ -113,19 +107,32 @@ class Gui(object):
         else:
             while self.interupt():
                 time.sleep(1)
-        # launched = True
-        # while launched:
-        #     self.draw_board()
-        #     self.render_font()
-        #     pygame.display.flip()  # Refresh display
-            
-            
-        #     for event in pygame.event.get():
-        #         if event.type == pygame.QUIT:
-        #             launched = False
-        #         if event.type == pygame.KEYUP:
-        #             if event.key == pygame.K_ESCAPE:
-        #                     launched = False
+    def render_font_AI(self,step = 0,time = 0):
+        intro_surface = self.game_font.render(f'BATTLE SHIPS',True,red)
+        intro_rect = intro_surface.get_rect(center = (925,300))
+        self.window.blit(intro_surface,intro_rect)
+        
+        score_surface = self.game_font.render(f'LEVEL: {self.dim}x{self.dim}',True,black)
+        score_rect = score_surface.get_rect(center = (925,450))
+        self.window.blit(score_surface,score_rect)
+        
+        high_score_surface = self.game_font.render(f'GENERATION: {step:4d}',True,black)
+        high_score_rect = high_score_surface.get_rect(center = (925,520))
+        self.window.blit(high_score_surface,high_score_rect)
+        
+        time_surface = self.game_font.render('TIME: {:.2f}s'.format(time),True,black)
+        time_rect = time_surface.get_rect(center = (925,590))
+        self.window.blit(time_surface,time_rect)
+    def display_AI(self, step = 0,time_ = 0, second = 2):
+        pygame.init()
+        self.render_font_AI(step,time_)
+        self.draw_board()
+        pygame.display.flip()  # Refresh display
+        if second != 0:
+            time.sleep(second)
+        else:
+            while self.interupt():
+                time.sleep(1)
 
 if __name__ == "__main__":
     dim = 6
