@@ -14,7 +14,7 @@ num_record = 5
 if __name__ == "__main__":
     #DFS
     
-    df = pd.DataFrame(columns = ['time','memory','game','algorithm'])
+    df = pd.DataFrame(columns = ['time','memory','game','algorithm','level'])
     
     for i in range(3):
         for _ in range(num_record):        
@@ -31,7 +31,7 @@ if __name__ == "__main__":
             agent.DFS()
             end_time = process_time()
             memo_info = psutil.Process(os.getpid()).memory_info().rss/(1024*1024) - itemMemory
-            df = df.append({'time' : end_time - begin_time, 'memory' : memo_info, 'game' : 'Tents','algorithm' : 'DFS'},ignore_index = True)
+            df = df.append({'time' : end_time - begin_time, 'memory' : memo_info, 'game' : 'Tents','algorithm' : 'DFS','level' : dict_level[i]},ignore_index = True)
 
 
             
@@ -51,7 +51,7 @@ if __name__ == "__main__":
             end_time = process_time()
             memo_info = psutil.Process(os.getpid()).memory_info().rss/(1024*1024) - itemMemory
             
-            df = df.append({'time' : end_time - begin_time, 'memory' : memo_info, 'game' : 'Tents','algorithm' : 'A_star'},ignore_index = True)
+            df = df.append({'time' : end_time - begin_time, 'memory' : memo_info, 'game' : 'Tents','algorithm' : 'A_star','level' : dict_level[i]},ignore_index = True)
 
     df.to_csv("result_tent.csv")
     #A_start
