@@ -95,9 +95,10 @@ class GUI_MENU(object):
             
             if button_tent.check_click():
                 self.tent()
+                return None
             if button_battle_ship.check_click():
                 self.battle_ship()
-            
+                return None
             pygame.display.update()
             self.clock.tick(60)
             
@@ -125,10 +126,10 @@ class GUI_MENU(object):
             
             if button_DFS.check_click():
                 self.screen_level('DFS BATTLE_SHIPS')
-            
+                return None
             if button_genetic_AI.check_click():
                 self.screen_level('GENETIC_AI BATTLE_SHIPS')
-            
+                return None
             pygame.display.update()
             self.clock.tick(60)
         
@@ -153,13 +154,12 @@ class GUI_MENU(object):
             
             if undo.check_click():
                 self.main_menu()
-                return None
             if A_star_button.check_click():
                 self.screen_level('A* TENTS')
-            
+                return None
             if DFS_button.check_click():
                 self.screen_level('DFS TENTS')
-            
+                return None
             pygame.display.update()
             self.clock.tick(60)
         
@@ -218,6 +218,7 @@ class GUI_MENU(object):
                             gen = battleships_geneticAI_search.Genetic(gen_object.get_board(), gen_object.get_ship(), gen_object.get_row_constraint(), gen_object.get_col_constraint(), len(gen_object.get_board()))
                             gen.solve()
                             gen.show()
+                    return None
                     
             
             pygame.display.update()
