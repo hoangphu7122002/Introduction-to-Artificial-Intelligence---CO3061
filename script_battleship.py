@@ -57,5 +57,4 @@ if __name__ == "__main__":
             else:
                 df = df.append({'time' : 'not solve', 'memory' : memo_info, 'game' : 'Battleship','algorithm' : 'geneticAI','level' : dict_level[i]},ignore_index = True)
 
-    df.to_csv("result_battleship.csv")
-    #A_start
+    df.to_csv("result_battleship.csv") #A_start
