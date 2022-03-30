@@ -141,7 +141,7 @@ class DFS:
                 return False
         # self.fix
         for i in range(len(self.fix)):
-            if (state[self.fix[i][0]][self.fix[i][1]] != BLOCK):
+            if (self.board[self.fix[i][0]][self.fix[i][1]] != BLOCK):
                 return False
         return True
     # using to show one of the solution
