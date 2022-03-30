@@ -11,6 +11,11 @@ class Genetic:
         self.board = np.array(board) #numpy array
         self.prtSolutionBoard = np.array(board)
         self.dim = dim
+        self.fix = []
+        for row in range(dim):
+            for col in range(dim):
+                if (board[row][col] == BLOCK):
+                    self.fix.append([row, col])
         self.row_constraint = row_constraint
         self.col_constraint = col_constraint
         self.ship = ship
@@ -192,20 +197,20 @@ class Genetic:
                 return False
         
         # not appear too close
-        temp = np.zeros((self.dim, self.dim))
+        vis = np.zeros((self.dim, self.dim))
         type_ship = []
         for r in range(self.dim):
             for c in range(self.dim):
                 if (state[r][c] == 0):
-                    temp[r][c] = True
-                elif state[r][c] == 1 and temp[r][c] == False:
+                    vis[r][c] = True
+                elif state[r][c] == 1 and vis[r][c] == False:
                     run = [r, c]
                     leng = 0
                     ship = []
                     #only 2 direction
                      #go right
                     while (run[1] in range(0, self.dim) and state[run[0]][run[1]] == 1):
-                        temp[run[0]][run[1]] = True
+                        vis[run[0]][run[1]] = True
                         ship.append(copy.deepcopy(run))
                         leng += 1
                         run[1] += 1
@@ -226,7 +231,7 @@ class Genetic:
                     leng = 0
                     ship = []
                     while (run[0] in range(0, self.dim) and state[run[0]][run[1]] == 1):
-                        temp[run[0]][run[1]] = True
+                        vis[run[0]][run[1]] = True
                         ship.append(copy.deepcopy(run))
                         leng += 1
                         run[0] += 1
@@ -239,10 +244,16 @@ class Genetic:
         # enough type of ship
         type_ship.sort()
         type_ship.reverse()
+
+
         # print("type ship")
         # print(type_ship)
         for i in range(len(type_ship)):
             if (type_ship[i] != self.ship[i]):
+                return False
+        # self.fix
+        for i in range(len(self.fix)):
+            if (state[self.fix[i][0]][self.fix[i][1]] != BLOCK):
                 return False
         return True
     def show(self):
