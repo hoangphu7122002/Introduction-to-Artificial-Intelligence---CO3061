@@ -23,6 +23,47 @@ class DFS:
         self.interupt = None # signal Esc when GUI show
         self.start_time = process_time()
         self.stop_time = 0
+    def shuffle_column(self, id_col, id_row, remain):
+        # print_board(self.board, self.dim, self.col_constraint, self.row_constraint)
+        # print(str(remain))
+        if (remain == 0 or id_row == self.dim):
+            self.__search__(id_col + 1)
+            return
+        if (self.dim - id_row < remain):
+            return
+        for row in range(id_row, self.dim):
+            if (self.board[row][id_col] == EMPTY):
+                if (np.count_nonzero(self.board[row,:]) >= self.row_constraint[row]): # we can't' check all case (another ship is too close so, we check at the end)
+                    continue
+                ### check corner ###
+                # get border of this cell
+                self.board[row][id_col] = BLOCK
+                border = self.get_border([[row, id_col]])
+                cell_BLOCK = [[row, id_col]]
+                for i in range(0, len(border)):
+                    if (self.board[border[i][0]][border[i][1]] == BLOCK):
+                        cell_BLOCK.append(border[i])
+                self.board[row][id_col] = EMPTY
+                # print(cell_BLOCK) # debug
+                if (len(cell_BLOCK) != 1):
+                    # same row
+                    same_row = True
+                    for i in range(0, len(cell_BLOCK)):
+                        if (cell_BLOCK[i][0] != cell_BLOCK[0][0]):
+                            same_row = False
+                    # same col
+                    same_col = True
+                    for i in range(0, len(cell_BLOCK)):
+                        if (cell_BLOCK[i][1] != cell_BLOCK[0][1]):
+                            same_col = False
+                    if (same_col == same_row): # more than one cell in the center
+                        continue
+                ######## accept
+                remain -= 1
+                self.board[row][id_col] = BLOCK
+                self.shuffle_column(id_col, row + 1, remain)
+                remain += 1
+                self.board[row][id_col] = EMPTY
     # search from column 0 to column 5
     def __search__(self, id_col):
         # check solution exist
@@ -51,59 +92,17 @@ class DFS:
             return
         # calculate number of BLOCK in each column need to put down
         remain = self.col_constraint[id_col] - np.count_nonzero(self.board[:,id_col])
-        # if number == 0
+        # if number == 0, search next column
         if (remain <= 0):
             self.__search__(id_col + 1)
             return
         # else shuffle this column
-        for t in range(0, self.dim):
-            keep = []
-            tmp = copy.deepcopy(remain)
-            for row in range(t, self.dim):
-                if (self.board[row][id_col] == EMPTY and np.count_nonzero(self.board[row,:]) < self.row_constraint[row]): # we can't' check all case (another ship is too close so, we check at the end)
-                    tmp -= 1
-                    keep.append([row, id_col])
-                    if (tmp == 0):
-                        for i in range(0, len(keep)):
-                            self.board[keep[i][0]][keep[i][1]] = BLOCK
-                        self.__search__(id_col + 1)
-                        # reset
-                        for i in range(0, len(keep)):
-                            self.board[keep[i][0]][keep[i][1]] = EMPTY
-                        tmp += 1 
-                        keep.pop()
+        self.shuffle_column(id_col, 0, remain)
     def solve(self):
         # start from id_col 0
         self.__search__(0)
         # display solution
-        try:
-            if (self.solution != None):           
-                print("===== SOLUTION =====")
-                init = Gui(self.prtSolutionBoard,self.dim,self.row_constraint,self.col_constraint)
-                init.display(self.total_step, self.stop_time)
-                vis = np.zeros((self.dim, self.dim))
-                for i in range(0, self.dim):
-                    for j in range(0, self.dim):
-                        if (self.solution[i][j] == BLOCK and vis[i][j] == 0):
-                            ii = copy.deepcopy(i)
-                            jj = copy.deepcopy(j)
-                            while (ii in range(0, self.dim) and self.solution[ii][jj] == BLOCK):
-                                self.prtSolutionBoard[ii][jj] = BLOCK
-                                vis[ii][jj] = 1
-                                ii += 1
-                            ii = copy.deepcopy(i)
-                            jj = copy.deepcopy(j)
-                            while (jj in range(0, self.dim) and self.solution[ii][jj] == BLOCK):
-                                self.prtSolutionBoard[ii][jj] = BLOCK
-                                vis[ii][jj] = 1
-                                jj += 1
-                            gui_board = Gui(self.prtSolutionBoard,self.dim,self.row_constraint,self.col_constraint)
-                            gui_board.display(self.total_step, self.stop_time)
-                gui_board = Gui(self.prtSolutionBoard,self.dim,self.row_constraint,self.col_constraint)
-                gui_board.display(self.total_step, self.stop_time, 0)
-        except:
-            # in case of break while searching the solution
-            print("No solution found yet!")
+        
 ######## HELPER FUNCTION ########
     ### get border of the ship ###
     def get_border(self, ship):
@@ -179,10 +178,61 @@ class DFS:
         return True
     # using to show one of the solution
     def show(self):
-        if (self.solution != None):
+        try:
+            if (self.solution != None):           
+                print("===== SOLUTION =====")
+                print_board(self.solution, self.dim, self.col_constraint, self.row_constraint)
+                init = Gui(self.prtSolutionBoard,self.dim,self.row_constraint,self.col_constraint)
+                init.display(self.total_step, self.stop_time)
+                vis = np.zeros((self.dim, self.dim))
+                for i in range(0, self.dim):
+                    for j in range(0, self.dim):
+                        if (self.solution[i][j] == BLOCK and vis[i][j] == 0):
+                            ii = copy.deepcopy(i)
+                            jj = copy.deepcopy(j)
+                            while (ii in range(0, self.dim) and self.solution[ii][jj] == BLOCK):
+                                self.prtSolutionBoard[ii][jj] = BLOCK
+                                vis[ii][jj] = 1
+                                ii += 1
+                            ii = copy.deepcopy(i)
+                            jj = copy.deepcopy(j)
+                            while (jj in range(0, self.dim) and self.solution[ii][jj] == BLOCK):
+                                self.prtSolutionBoard[ii][jj] = BLOCK
+                                vis[ii][jj] = 1
+                                jj += 1
+                            gui_board = Gui(self.prtSolutionBoard,self.dim,self.row_constraint,self.col_constraint)
+                            gui_board.display(self.total_step, self.stop_time)
+                gui_board = Gui(self.prtSolutionBoard,self.dim,self.row_constraint,self.col_constraint)
+                gui_board.display(self.total_step, self.stop_time, 0)
+            else:
+                # break while loop
+                print("No solution found yet!")
+        except:
+            # solution = list != None
+            print("===== SOLUTION =====")
             print_board(self.solution, self.dim, self.col_constraint, self.row_constraint)
-        else:
-            print("No solution found!")
+            init = Gui(self.prtSolutionBoard,self.dim,self.row_constraint,self.col_constraint)
+            init.display(self.total_step, self.stop_time)
+            vis = np.zeros((self.dim, self.dim))
+            for i in range(0, self.dim):
+                for j in range(0, self.dim):
+                    if (self.solution[i][j] == BLOCK and vis[i][j] == 0):
+                        ii = copy.deepcopy(i)
+                        jj = copy.deepcopy(j)
+                        while (ii in range(0, self.dim) and self.solution[ii][jj] == BLOCK):
+                            self.prtSolutionBoard[ii][jj] = BLOCK
+                            vis[ii][jj] = 1
+                            ii += 1
+                        ii = copy.deepcopy(i)
+                        jj = copy.deepcopy(j)
+                        while (jj in range(0, self.dim) and self.solution[ii][jj] == BLOCK):
+                            self.prtSolutionBoard[ii][jj] = BLOCK
+                            vis[ii][jj] = 1
+                            jj += 1
+                        gui_board = Gui(self.prtSolutionBoard,self.dim,self.row_constraint,self.col_constraint)
+                        gui_board.display(self.total_step, self.stop_time)
+            gui_board = Gui(self.prtSolutionBoard,self.dim,self.row_constraint,self.col_constraint)
+            gui_board.display(self.total_step, self.stop_time, 0)
     def get_total_step_search(self):
         return self.total_step
 
