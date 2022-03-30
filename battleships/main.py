@@ -1,5 +1,5 @@
 import imp
-from gen_board import *
+from battleships.gen_board import *
 from blind_search import *
 from geneticAI import *
 from GUI import *
