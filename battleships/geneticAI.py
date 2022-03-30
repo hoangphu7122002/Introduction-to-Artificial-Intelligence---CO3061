@@ -1,4 +1,4 @@
-from gen_board import *
+from battleships.gen_board import *
 import time
 import numpy as np
 from time import process_time
