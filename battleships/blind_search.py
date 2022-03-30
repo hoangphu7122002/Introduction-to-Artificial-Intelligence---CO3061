@@ -1,5 +1,5 @@
 from battleships.gen_board import *
-from GUI import *
+from battleships.GUI import *
 import numpy as np
 import copy
 from time import process_time
