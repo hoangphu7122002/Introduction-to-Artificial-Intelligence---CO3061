@@ -2,7 +2,7 @@ from battleships.gen_board import *
 import time
 import numpy as np
 from time import process_time
-from GUI import *
+from battleships.GUI import *
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
