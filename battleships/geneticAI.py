@@ -5,6 +5,7 @@ from time import process_time
 from battleships.GUI import *
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
+from collections import defaultdict
 
 class Genetic:
     def __init__(self, board, ship, row_constraint, col_constraint, dim = 6):
@@ -28,28 +29,17 @@ class Genetic:
         self.stop_time = 0
         self.population = 50
         self.percen_plt = None
-    def generate_board(self):
-        # generate random board enough part of ship in all of rows
-        # loop through rows
-        board2 = copy.deepcopy(self.board)
-        for row in range(self.dim):
-            # calculate remain part of ships need
-            remain = self.row_constraint[row] - np.count_nonzero(board2[row, :])
-            # put each of them to random index
-            for put in range(remain):
-                col = np.random.randint(0, self.dim)
-                while (board2[row][col] == 1):
-                    col = np.random.randint(0, self.dim)
-                board2[row][col] = 1
-        return board2
-    def fitness(self, state):
-        cnt = 0
-        for c in range(self.dim):
-            cnt += np.count_nonzero(state[:, c]) == self.col_constraint[c] 
-        return cnt
+        self.best_col = []
+        self.largest_population = 0
+        for i in range(dim):
+            self.best_col.append(defaultdict(int))
+        self.best_row = []
+        for i in range(dim):
+            self.best_row.append(defaultdict(int))
     def solve(self):
         num_of_populations = self.population
         # generate(percentage list)
+        # min index -> better fitness -> more oppotunity
         percentage = []
         for i in range(self.population):
             percentage.extend([i] * (self.population - i))
@@ -67,31 +57,33 @@ class Genetic:
             except:
                 ax.clear()
                 ax.axis('equal')
-                mylabels = [str(i) for i in range(self.dim + 1)]
-                ax.set_title("Generation " + str(self.generation) + "\nSolution found! Close the window to view solution")
+                mylabels = [str(i) for i in range(self.dim * 2 + 1)]
+                ax.set_title("Generation " + str(self.generation) + " | max fitness " + str(self.dim * 2) + "\nSolution found! Close the window to view solution")
                 ax.pie(self.percen_plt, labels = mylabels, startangle = 90)
                 return
             self.generation += 1
             ax.clear()
             ax.axis('equal')
-            ax.set_title("Generation " + str(self.generation))
+            ax.set_title("Generation " + str(self.generation) + " | max fitness " + str(self.dim * 2))
             #=========#
-            # selection
+            # selection best column and row
+            self.best_col.clear()
+            self.best_row.clear()
+            for i in range(self.dim):
+                self.best_col.append(defaultdict(int))
+                self.best_row.append(defaultdict(int))
             for i in range(0, num_of_populations):
-                inx1 = np.random.randint(0, len(percentage))
-                inx2 = np.random.randint(0, len(percentage))
-                while inx2 == inx1:
-                    inx2 = np.random.randint(0, len(percentage))
-                inx1 = percentage[inx1]
-                inx2 = percentage[inx2]
-                if self.fitness(self.gen[inx1]) < int(self.dim / 3):
-                    self.gen[inx1] = self.generate_board()
-                if self.fitness(self.gen[inx2]) < int(self.dim / 3):
-                    self.gen[inx2] = self.generate_board()
-                self.gen[inx1], self.gen[inx2] = self.gen[inx2], self.gen[inx1]
+                # column
+                for c in range(0, self.dim):
+                    if (np.count_nonzero(self.gen[i][:, c]) == self.col_constraint[c]):
+                        self.best_col[c][self.cvt_str(self.gen[i][:, c])] += 1         
+                for r in range(0, self.dim):
+                    if (np.count_nonzero(self.gen[i][r, :]) == self.row_constraint[r]):
+                        self.best_row[r][self.cvt_str(self.gen[i][r, :])] += 1                 
+            self.gen.sort(key = self.fitness, reverse = True)
             #=========#
             # crossover
-            for i in range(0, int(num_of_populations / 5) * 4):
+            for i in range(0, int(num_of_populations / 2)):
                 # random index
                 inx1 = np.random.randint(0, len(percentage))
                 inx2 = np.random.randint(0, len(percentage))
@@ -99,26 +91,40 @@ class Genetic:
                     inx2 = np.random.randint(0, len(percentage))
                 inx1 = percentage[inx1]
                 inx2 = percentage[inx2]
-                # crossover
-                self.gen[inx1], self.gen[inx2] = self.crossover(self.gen[inx1], self.gen[inx2])
-            #=========#
-            # mutate
-            for i in range(0, int(num_of_populations/ 10)):
-                inx = np.random.randint(0, len(percentage))
-                inx = percentage[inx]
-                self.mutate(self.gen[inx])   
+                # crossover                
+                child1, child2 = self.crossover(self.gen[inx1], self.gen[inx2])    
+                # mutate            
+                if np.random.uniform(0, 1) < 0.1 and self.fitness(self.gen[inx1]) != self.dim * 2:
+                    child1 = self.mutate(self.gen[inx1])
+                if np.random.uniform(0, 1) < 0.1 and self.fitness(self.gen[inx2]) != self.dim * 2:
+                    child2 = self.mutate(self.gen[inx2])
+                self.gen.extend([child1, child2])
+            self.gen.sort(key = self.fitness, reverse = True)
+            while (len(self.gen) > self.population):
+                self.gen.pop()
             #=========#
             # check
-            percen = np.zeros(self.dim + 1)
-            for i in range(0, num_of_populations):
+            percen = np.zeros(self.dim * 2 + 1)
+            for i in range(0, num_of_populations):                
                 tmp = self.fitness(self.gen[i])
                 percen[tmp] += 1
-                if (self.check(self.gen[i])):
-                    self.solution = copy.deepcopy(self.gen[i])
-                    self.stop_time = process_time() - self.start_time
+                if (tmp == self.dim * 2):
+                    print_board(self.gen[i], self.dim, self.col_constraint, self.row_constraint)
+                    if (self.check(self.gen[i])):
+                        self.solution = copy.deepcopy(self.gen[i])
+                        self.stop_time = process_time() - self.start_time
+                    else:
+                        self.gen[i] = self.mutate(self.gen[i])
+            # # mutate some highest best fitness
+            # self.largest_population = 0
+            # for i in range(len(percen)):
+            #     if (percen[i] > percen[self.largest_population]):
+            #         self.largest_population = i
+            # if (percen[self.largest_population] < int(self.population * 0.5)):
+            #     self.largest_population = -1
             # prepare data for pie chart
             self.percen_plt = np.array(percen)
-            mylabels = [str(i) for i in range(self.dim + 1)]
+            mylabels = [str(i) for i in range(self.dim * 2 + 1)]
             ax.pie(self.percen_plt, labels = mylabels, startangle = 90)
             #=========#
             # debug pause after new 50 generation
@@ -161,25 +167,117 @@ class Genetic:
             gui_board = Gui(self.prtSolutionBoard,self.dim,self.row_constraint,self.col_constraint)
             gui_board.display_AI(self.generation, self.stop_time, 0)
     def mutate(self, state):
-        #cur_fitness = self.fitness(state)   
-        num_mutate_row = np.random.randint(0, self.dim, np.random.randint(0, self.dim) + 1)
-        #print(state)
-        for i in range(len(num_mutate_row)):
-            np.random.shuffle(state[num_mutate_row[i]])
-            
+        # stuck case
+        if (self.fitness(state) >= int(self.dim * 2 * 0.8)):
+            one = []
+            for r in range(self.dim):
+                for c in range(self.dim):
+                    if (state[r][c] == 1):
+                        one.append([r, c])
+            np.random.shuffle(one)
+            for i in range(np.random.randint(int(len(one) / 2), len(one))):
+                rand_row = np.random.randint(0, self.dim)
+                rand_col = np.random.randint(0, self.dim)
+                while (state[rand_row][rand_col] == 1):
+                    rand_row = np.random.randint(0, self.dim)
+                    rand_col = np.random.randint(0, self.dim)
+                state[rand_row][rand_col] = 1
+                state[one[i][0]][one[i][1]] = 0
+            return state
+        balance = 0
+        rand = []
+        for r in range(self.dim):
+            for c in range(self.dim):
+                rand.append([r, c])
+        np.random.shuffle(rand)
+        for i in range(len(rand)):
+            r = rand[i][0]
+            c = rand[i][1]
+            if (state[r][c] == 1 and (np.count_nonzero(state[r, :]) > self.row_constraint[r] or np.count_nonzero(state[:, c]) > self.col_constraint[c])):
+                balance += 1
+                state[r][c] = 0
+            if (state[r][c] == 0 and (np.count_nonzero(state[r, :]) < self.row_constraint[r] or np.count_nonzero(state[:, c]) < self.col_constraint[c])):
+                balance -= 1
+                state[r][c] = 1
+        if (balance == 0):
+            return state
+        else:
+            while (balance > 0):
+                rand_row = np.random.randint(0, self.dim)
+                rand_col = np.random.randint(0, self.dim)
+                while (state[rand_row][rand_col] == 1):
+                    rand_row = np.random.randint(0, self.dim)
+                    rand_col = np.random.randint(0, self.dim)
+                state[rand_row][rand_col] = 1
+                balance -= 1
+            while (balance < 0):
+                rand_row = np.random.randint(0, self.dim)
+                rand_col = np.random.randint(0, self.dim)
+                while (state[rand_row][rand_col] == 0):
+                    rand_row = np.random.randint(0, self.dim)
+                    rand_col = np.random.randint(0, self.dim)
+                state[rand_row][rand_col] = 0
+                balance += 1
+            return state
     def crossover(self,parent1, parent2):
         child1 = copy.deepcopy(parent1)
         child2 = copy.deepcopy(parent2)
-        max_fitness = max(self.fitness(child1), self.fitness(child2))
-        for i in range(0, self.dim):
-            inx = np.random.randint(0, self.dim)
-            child1[inx], child2[inx] = child2[inx], child1[inx]
-            if max(self.fitness(child1), self.fitness(child2)) < max_fitness:
-                child1[inx], child2[inx] = child2[inx], child1[inx]
-            else:
-                max_fitness = max(self.fitness(child1), self.fitness(child2))
+        rand = []
+        for r in range(self.dim):
+            for c in range(self.dim):
+                rand.append([r, c])
+        np.random.shuffle(rand)
+        diff = False
+        for i in range(len(rand)):
+            r = rand[i][0]
+            c = rand[i][1]
+            better_col = self.get_better_column(child1[:, c], child2[:, c], c)
+            better_row = self.get_better_row(child1[r, :], child2[r, :], r)
+            if better_col and better_row:
+                child2[:, c] = child1[:, c]
+                child2[r, :] = child1[r, :]
+                diff = True
+            elif better_col:
+                child2[:, c] = child1[:, c]
+                diff = True
+            elif better_row:
+                child2[r, :] = child1[r, :]
+                diff = True
+        if not diff:
+            child1 = self.mutate(child1)
+            child2 = self.mutate(child2)
         return child1, child2
     ####### HELPER FUNCTION ########
+    def generate_board(self):
+        # generate random board enough part of ship in all of rows
+        # loop through rows
+        board2 = copy.deepcopy(self.board)
+        for row in range(self.dim):
+            # calculate remain part of ships need
+            remain = self.row_constraint[row] - np.count_nonzero(board2[row, :])
+            # put each of them to random index
+            for put in range(remain):
+                col = np.random.randint(0, self.dim)
+                while (board2[row][col] == 1):
+                    col = np.random.randint(0, self.dim)
+                board2[row][col] = 1
+        return board2
+    def fitness(self, state):
+        cnt = 0
+        for c in range(self.dim):
+            cnt += int(np.count_nonzero(state[:, c]) == self.col_constraint[c])
+        for r in range(self.dim):
+            cnt += int(np.count_nonzero(state[r, :]) == self.row_constraint[r])
+        return cnt
+    def cvt_str(self, list):
+        _str_ = ''
+        for i in range(len(list)):
+            _str_ += str(int(list[i]))        
+        return _str_
+    def get_better_column(self, column1, column2, id_col):
+        return self.best_col[id_col][self.cvt_str(column1)] > self.best_col[id_col][self.cvt_str(column2)]
+    def get_better_row(self, column1, column2, id_row):
+        return self.best_col[id_row][self.cvt_str(column1)] > self.best_col[id_row][self.cvt_str(column2)]
     def get_border(self, ship):
         border = []
         for sh in range(0, len(ship)):
