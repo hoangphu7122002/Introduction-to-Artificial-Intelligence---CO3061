@@ -1,4 +1,6 @@
 import pygame, sys
+import psutil
+import os
 import tents.gen_board as tents_gen_board
 import tents.search as tents_search
 
@@ -223,6 +225,8 @@ class GUI_MENU(object):
             
             pygame.display.update()
             self.clock.tick(60)
-
+itemMemory = psutil.Process(os.getpid()).memory_info().rss/(1024*1024)
 a = GUI_MENU()
 a.main_menu()
+memo_info = psutil.Process(os.getpid()).memory_info().rss/(1024*1024) - itemMemory
+print(memo_info)
