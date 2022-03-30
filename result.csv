@@ -1,7 +1,0 @@
-,time,memory,game,algorithm
-0,0.0,0.05859375,Tents,DFS
-1,0.015625,0.00390625,Tents,DFS
-2,0.265625,0.140625,Tents,DFS
-3,0.0,0.01953125,Tents,A_star
-4,0.125,0.00390625,Tents,A_star
-5,19.734375,0.09375,Tents,A_star
