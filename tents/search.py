@@ -68,7 +68,7 @@ class Search(object):
                 neighbors = get_neighbors(self.dim,x,y,4)
                 for position in neighbors:
                     (x_nei,y_nei) = position
-                    if board[x_nei][y_nei] == EMPTY:
+                    if board[x_nei][y_nei] == EMPTY and np.count_nonzero(board[:,y_nei] == TENT) < self.col_constraint[y_nei] and np.count_nonzero(board[x_nei, :]  == TENT) < self.row_constraint[x_nei]:
                         board[x_nei][y_nei] = TENT 
                         score_tent = self.score(board) + depth + 1
                         self.open_list.put((score_tent,depth + 1,self.zip_board(board)))
