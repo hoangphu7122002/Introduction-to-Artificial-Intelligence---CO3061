@@ -53,5 +53,5 @@ if __name__ == "__main__":
             
             df = df.append({'time' : end_time - begin_time, 'memory' : memo_info, 'game' : 'Tents','algorithm' : 'A_star','level' : dict_level[i]},ignore_index = True)
 
-    df.to_csv("result_tent.csv")
+    df.to_csv("csv\\result_tent.csv")
     #A_start
