@@ -23,47 +23,11 @@ class DFS:
         self.interupt = None # signal Esc when GUI show
         self.start_time = process_time()
         self.stop_time = 0
-    def shuffle_column(self, id_col, id_row, remain):
-        # print_board(self.board, self.dim, self.col_constraint, self.row_constraint)
-        # print(str(remain))
-        if (remain == 0 or id_row == self.dim):
-            self.__search__(id_col + 1)
-            return
-        if (self.dim - id_row < remain):
-            return
-        for row in range(id_row, self.dim):
-            if (self.board[row][id_col] == EMPTY):
-                if (np.count_nonzero(self.board[row,:]) >= self.row_constraint[row]): # we can't' check all case (another ship is too close so, we check at the end)
-                    continue
-                ### check corner ###
-                # get border of this cell
-                self.board[row][id_col] = BLOCK
-                border = self.get_border([[row, id_col]])
-                cell_BLOCK = [[row, id_col]]
-                for i in range(0, len(border)):
-                    if (self.board[border[i][0]][border[i][1]] == BLOCK):
-                        cell_BLOCK.append(border[i])
-                self.board[row][id_col] = EMPTY
-                # print(cell_BLOCK) # debug
-                if (len(cell_BLOCK) != 1):
-                    # same row
-                    same_row = True
-                    for i in range(0, len(cell_BLOCK)):
-                        if (cell_BLOCK[i][0] != cell_BLOCK[0][0]):
-                            same_row = False
-                    # same col
-                    same_col = True
-                    for i in range(0, len(cell_BLOCK)):
-                        if (cell_BLOCK[i][1] != cell_BLOCK[0][1]):
-                            same_col = False
-                    if (same_col == same_row): # more than one cell in the center
-                        continue
-                ######## accept
-                remain -= 1
-                self.board[row][id_col] = BLOCK
-                self.shuffle_column(id_col, row + 1, remain)
-                remain += 1
-                self.board[row][id_col] = EMPTY
+        self.fix = []
+        for row in range(dim):
+            for col in range(dim):
+                if (board[row][col] == BLOCK):
+                    self.fix.append([row, col])
     # search from column 0 to column 5
     def __search__(self, id_col):
         # check solution exist
@@ -175,6 +139,10 @@ class DFS:
         for i in range(len(type_ship)):
             if (type_ship[i] != self.ship[i]):
                 return False
+        # self.fix
+        for i in range(len(self.fix)):
+            if (state[self.fix[i][0]][self.fix[i][1]] != BLOCK):
+                return False
         return True
     # using to show one of the solution
     def show(self):
@@ -235,7 +203,47 @@ class DFS:
             gui_board.display(self.total_step, self.stop_time, 0)
     def get_total_step_search(self):
         return self.total_step
-
+    def shuffle_column(self, id_col, id_row, remain):
+        # print_board(self.board, self.dim, self.col_constraint, self.row_constraint)
+        # print(str(remain))
+        if (remain == 0 or id_row == self.dim):
+            self.__search__(id_col + 1)
+            return
+        if (self.dim - id_row < remain):
+            return
+        for row in range(id_row, self.dim):
+            if (self.board[row][id_col] == EMPTY):
+                if (np.count_nonzero(self.board[row,:]) >= self.row_constraint[row]): # we can't' check all case (another ship is too close so, we check at the end)
+                    continue
+                ### check corner ###
+                # get border of this cell
+                self.board[row][id_col] = BLOCK
+                border = self.get_border([[row, id_col]])
+                cell_BLOCK = [[row, id_col]]
+                for i in range(0, len(border)):
+                    if (self.board[border[i][0]][border[i][1]] == BLOCK):
+                        cell_BLOCK.append(border[i])
+                self.board[row][id_col] = EMPTY
+                # print(cell_BLOCK) # debug
+                if (len(cell_BLOCK) != 1):
+                    # same row
+                    same_row = True
+                    for i in range(0, len(cell_BLOCK)):
+                        if (cell_BLOCK[i][0] != cell_BLOCK[0][0]):
+                            same_row = False
+                    # same col
+                    same_col = True
+                    for i in range(0, len(cell_BLOCK)):
+                        if (cell_BLOCK[i][1] != cell_BLOCK[0][1]):
+                            same_col = False
+                    if (same_col == same_row): # more than one cell in the center
+                        continue
+                ######## accept
+                remain -= 1
+                self.board[row][id_col] = BLOCK
+                self.shuffle_column(id_col, row + 1, remain)
+                remain += 1
+                self.board[row][id_col] = EMPTY
 if __name__ == '__main__':
     dim = 6
     gen_object = gen_board(dim)
