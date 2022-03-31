@@ -28,7 +28,13 @@ class Genetic:
         self.start_time = process_time()
         self.stop_time = 0
         self.population = 50
-        self.percen_plt = None
+        if dim == 8:
+            self.population = 100
+        elif dim == 10:
+            self.population = 200
+        elif dim == 15:
+            self.population = 500
+        self.percen_plt = np.zeros(self.dim * 2 + 1)
         self.best_col = []
         self.largest_population = 0
         for i in range(dim):
@@ -99,30 +105,29 @@ class Genetic:
                 if np.random.uniform(0, 1) < 0.1 and self.fitness(self.gen[inx2]) != self.dim * 2:
                     child2 = self.mutate(self.gen[inx2])
                 self.gen.extend([child1, child2])
+            ### sort ###
             self.gen.sort(key = self.fitness, reverse = True)
             while (len(self.gen) > self.population):
                 self.gen.pop()
-            #=========#
-            # check
+            ### check ###
             percen = np.zeros(self.dim * 2 + 1)
             for i in range(0, num_of_populations):                
                 tmp = self.fitness(self.gen[i])
                 percen[tmp] += 1
+                # if (percen[tmp] >= int(self.population * 0.9)) :
+                #     # get a half to mutate
+                #     for i in range(0, int(self.population * 0.9 * 0.8)):
+                #         # some new better column and row will appear and replace the old
+                #         self.gen[i] = self.mutate(self.gen[i])
+                #     break
                 if (tmp == self.dim * 2):
-                    print_board(self.gen[i], self.dim, self.col_constraint, self.row_constraint)
+                    # print_board(self.gen[i], self.dim, self.col_constraint, self.row_constraint)
                     if (self.check(self.gen[i])):
                         self.solution = copy.deepcopy(self.gen[i])
                         self.stop_time = process_time() - self.start_time
                     else:
                         self.gen[i] = self.mutate(self.gen[i])
-            # # mutate some highest best fitness
-            # self.largest_population = 0
-            # for i in range(len(percen)):
-            #     if (percen[i] > percen[self.largest_population]):
-            #         self.largest_population = i
-            # if (percen[self.largest_population] < int(self.population * 0.5)):
-            #     self.largest_population = -1
-            # prepare data for pie chart
+            ### prepare data for pie chart ###
             self.percen_plt = np.array(percen)
             mylabels = [str(i) for i in range(self.dim * 2 + 1)]
             ax.pie(self.percen_plt, labels = mylabels, startangle = 90)
@@ -168,14 +173,15 @@ class Genetic:
             gui_board.display_AI(self.generation, self.stop_time, 0)
     def mutate(self, state):
         # stuck case
-        if (self.fitness(state) >= int(self.dim * 2 * 0.8)):
+        # big fitness and big percentage in population
+        if (self.fitness(state) >= int(self.dim * 2 * 0.8) and self.percen_plt[self.fitness(state)] >= int(self.population * 0.8)):
             one = []
             for r in range(self.dim):
                 for c in range(self.dim):
                     if (state[r][c] == 1):
                         one.append([r, c])
             np.random.shuffle(one)
-            for i in range(np.random.randint(int(len(one) / 2), len(one))):
+            for i in range(np.random.randint(0, int(len(one) / 2))):
                 rand_row = np.random.randint(0, self.dim)
                 rand_col = np.random.randint(0, self.dim)
                 while (state[rand_row][rand_col] == 1):
@@ -183,7 +189,6 @@ class Genetic:
                     rand_col = np.random.randint(0, self.dim)
                 state[rand_row][rand_col] = 1
                 state[one[i][0]][one[i][1]] = 0
-            return state
         balance = 0
         rand = []
         for r in range(self.dim):
@@ -233,16 +238,19 @@ class Genetic:
             c = rand[i][1]
             better_col = self.get_better_column(child1[:, c], child2[:, c], c)
             better_row = self.get_better_row(child1[r, :], child2[r, :], r)
-            if better_col and better_row:
+            if better_col and better_row and np.random.uniform(0, 1) > 0.6:
                 child2[:, c] = child1[:, c]
                 child2[r, :] = child1[r, :]
                 diff = True
-            elif better_col:
+            elif better_col and np.random.uniform(0, 1) > 0.6:
                 child2[:, c] = child1[:, c]
                 diff = True
-            elif better_row:
+            elif better_row and np.random.uniform(0, 1) > 0.6:
                 child2[r, :] = child1[r, :]
                 diff = True
+            else:
+                child1[:, c] = child2[:, c]
+                child1[r, :] = child2[r, :]
         if not diff:
             child1 = self.mutate(child1)
             child2 = self.mutate(child2)
