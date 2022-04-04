@@ -11,16 +11,16 @@ Tents puzzle or Battleships puzzle
 
 **Select the algorithm you want to watch**
 
-Tents puzzle: <br/>
+*Tents puzzle:* <br/>
 
-*A'*' algorithm <br/>
+*A\* algorithm <br/>
 *DFS (Depth first search) algorithm <br/>
 
 <p align="center">
   <img width="600" height="700" src="images/GUI_TENTS.png">
 </p>
 
-Battleships puzzle: <br/>
+*Battleships puzzle:* <br/>
 
 *Genetic algorithm <br/>
 *DFS (Depth first search) algorithm <br/>
