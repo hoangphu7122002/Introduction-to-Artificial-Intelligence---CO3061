@@ -4,9 +4,9 @@ Run GUI_start.py.
 
 **Select the game you want to watch**
 
-Tents puzzle or Battleships
+Tents puzzle or Battleships puzzle
 <p align="center">
-  <img width="600" height="200" src="images/GUI_start.png">
+  <img width="600" height="800" src="images/GUI_start.png">
 </p>
 
 **Select the algorithm you want to watch**
@@ -14,19 +14,25 @@ Tents puzzle or Battleships
 Tents puzzle:
 
 *A'*' algorithm
-
 *DFS (Depth first search) algorithm
 
-![Image](images/GUI_TENTS.png)
+<p align="center">
+  <img width="600" height="800" src="images/GUI_TENTS.png">
+</p>
 
 Battleships puzzle:
+
 *Genetic algorithm
 *DFS (Depth first search) algorithm
-![Image](images/GUI_Battleship.png)
 
+<p align="center">
+  <img width="600" height="800" src="images/GUI_Battleship.png">
+</p>
 
 **Select the level**
-![Image](images/GUI_Blocksize.png)
+<p align="center">
+  <img width="600" height="800" src="images/GUI_Blocksize.png">
+</p>
 
 **Rule of Tents Game**
 *Each tent is placed adjacent to a single tree.
