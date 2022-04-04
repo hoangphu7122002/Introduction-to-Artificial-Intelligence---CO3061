@@ -49,6 +49,11 @@ Tents puzzle or Battleships puzzle
 ![Image](images/Tents.png)
 
 **GUI of Battleships puzzle**
+*Finding for solution
+<p align="center">
+  <img width="600" height="600" src="images/pie_chart.png">
+</p>
+*Visualize solution
 ![Image](images/Battleships.png)
 
 **Run to measure**
