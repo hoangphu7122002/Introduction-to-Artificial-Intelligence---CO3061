@@ -6,27 +6,27 @@ Run GUI_start.py.
 
 Tents puzzle or Battleships puzzle
 <p align="center">
-  <img width="600" height="800" src="images/GUI_start.png">
+  <img width="600" height="700" src="images/GUI_start.png">
 </p>
 
 **Select the algorithm you want to watch**
 
-Tents puzzle:__
+Tents puzzle: <br/>
 
-*A'*' algorithm__
-*DFS (Depth first search) algorithm__
+*A'*' algorithm <br/>
+*DFS (Depth first search) algorithm <br/>
 
 <p align="center">
-  <img width="600" height="800" src="images/GUI_TENTS.png">
+  <img width="600" height="700" src="images/GUI_TENTS.png">
 </p>
 
-Battleships puzzle:__
+Battleships puzzle: <br/>
 
-*Genetic algorithm__
-*DFS (Depth first search) algorithm__
+*Genetic algorithm <br/>
+*DFS (Depth first search) algorithm <br/>
 
 <p align="center">
-  <img width="600" height="800" src="images/GUI_Battleship.png">
+  <img width="600" height="700" src="images/GUI_Battleship.png">
 </p>
 
 **Select the level**
@@ -34,16 +34,16 @@ Battleships puzzle:__
   <img width="600" height="800" src="images/GUI_Blocksize.png">
 </p>
 
-**Rule of Tents Game**__
-*Each tent is placed adjacent to a single tree.__
-*The number of tents must equal to the number of trees.__
-*Around each tent, there must be no other tents.__
-*The number of tents placed in each row and column must equal to the constraint of this row and column respectively.__
+**Rule of Tents Game** <br/>
+*Each tent is placed adjacent to a single tree. <br/>
+*The number of tents must equal to the number of trees. <br/>
+*Around each tent, there must be no other tents. <br/>
+*The number of tents placed in each row and column must equal to the constraint of this row and column respectively. <br/>
 
-**Rule of Battleships**__
-*Finding the number of battleships according to the requirement of amount and size.__
-*Around each battleship, there must be no other battleships.__
-*The number of block of these battleships placed in each row and column must equal to the constraint of this row and column respectively.__
+**Rule of Battleships** <br/>
+*Finding the number of battleships according to the requirement of amount and size. <br/>
+*Around each battleship, there must be no other battleships. <br/>
+*The number of block of these battleships placed in each row and column must equal to the constraint of this row and column respectively. <br/>
 
 **GUI of Tents puzzle**
 ![Image](images/Tents.png)
