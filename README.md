@@ -5,14 +5,15 @@ Run GUI_start.py.
 **Select the game you want to watch**
 
 Tents puzzle or Battleships
-
-![Image](images/GUI_start.png)
+<p align="center">
+  <img width="600" height="200" src="images/GUI_start.png">
+</p>
 
 **Select the algorithm you want to watch**
 
 Tents puzzle:
 
-*A* algorithm
+*A'*' algorithm
 
 *DFS (Depth first search) algorithm
 
