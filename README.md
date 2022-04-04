@@ -3,13 +3,19 @@
 Run GUI_start.py.
 
 **Select the game you want to watch**
+
 Tents puzzle or Battleships
-![Image](images/GUI_start.png.png)
+
+![Image](images/GUI_start.png)
 
 **Select the algorithm you want to watch**
+
 Tents puzzle:
+
 *A* algorithm
+
 *DFS (Depth first search) algorithm
+
 ![Image](images/GUI_TENTS.png)
 
 Battleships puzzle:
