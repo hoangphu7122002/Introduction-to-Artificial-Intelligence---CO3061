@@ -51,10 +51,12 @@ Tents puzzle or Battleships puzzle
 **GUI of Battleships puzzle**
 *Finding for solution <br/>
 <p align="center">
-  <img width="600" height="700" src="images/pie_chart.png">
+  <img width="600" height="500" src="images/pie_chart.png">
 </p>
 *Visualize solution <br/>
-![Image](images/Battleships.png)
+<p align="center">
+  <img src="images/Battleships.png">
+</p>
 
 **Run to measure**
 Run script_battleship.py -> file result in: "csv/result_battleship.csv".
